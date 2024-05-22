@@ -1,0 +1,169 @@
+#PART 2 (WITH DATASETS)
+
+
+"""
+Encoding Nominal Categorical Feature
+"""
+
+import numpy as np
+from sklearn.preprocessing import LabelBinarizer, MultiLabelBinarizer
+feature = np.array([
+    ["Texas"],
+    ["California"],
+    ["Texas"],
+    ["Delaware"],
+     ["Texas"]
+])
+one_hot = LabelBinarizer()
+one_hot.fit_transform(feature)
+
+one_hot.classes_
+
+one_hot.inverse_transform(one_hot.transform(feature))
+                #Output Expected
+
+import pandas as pd
+pd.get_dummies(feature[:,0])
+
+multiclass_feature=[
+    ("Texas","Florida"),
+    ("California","Alabama"),
+    ("Texas","Florida"),
+   ("Delaware","Florida"),
+    ("Texas","Alabama")
+]
+one_hot_multiclass= MultiLabelBinarizer()
+one_hot_multiclass.fit_transform(multiclass_feature)
+
+one_hot_multiclass.classes_
+                #Output Expected
+
+"""
+Encoding Ordinal Categorical Features
+"""
+
+import pandas as pd
+df=pd.DataFrame({"Score":["Low","Low","Medium","Medium","High"]})
+scale_mapper={
+    "Low":1,
+    "Medium":2,
+    "High":3
+}
+df["Score"].replace(scale_mapper)
+                #Output Expected
+
+"""
+Encoding Dictionaries of Features
+"""
+
+from sklearn.feature_extraction import DictVectorizer
+data_dict=[
+    {"Red":2,"Blue":4},
+    {"Red":4,"Blue":3},
+     {"Red":1,"Yellow":2},
+     {"Red":2,"Yellow":2}
+
+]
+dictVectorizer=DictVectorizer(sparse=False)
+features = dictVectorizer.fit_transform(data_dict)
+features
+
+dictVectorizer.get_feature_names_out()
+                #Output Expected
+
+"""
+Imputing Missing Class Values
+"""
+
+import numpy as np
+from sklearn.neighbors import KNeighborsClassifier
+X = np.array([[0,2.10,1.45],
+              [1,1.18,1.33],
+              [0,1.22,1.27],
+              [1,-0.21,-1.19]])
+X_with_nan=np.array([[np.nan,0.87,1.37],
+                     [np.nan,-0.67,-0.22]])
+clf= KNeighborsClassifier(3,weights='distance')
+trained_model=clf.fit(X[:,1:],X[:,0])
+imputed_values = trained_model.predict(X_with_nan[:,1:])
+X_with_imputed = np.hstack((imputed_values.reshape(-1,1),X_with_nan[:,1:]))
+np.vstack((X_with_imputed,X))
+
+from sklearn.impute import SimpleImputer
+X_complete = np.vstack((X_with_nan,X))
+imputer = SimpleImputer(missing_values=np.nan,strategy='most_frequent')
+imputer.fit_transform(X_complete)
+               #Output Expected
+
+"""
+Handling Imbalanced Classes
+"""
+
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import load_iris
+iris = load_iris()
+feature = iris.data
+target = iris.target
+features = features[40:,:]
+target = target[40:]
+target = np.where((target==0),0,1)
+target
+
+weights = {0:.9,1:0.1}
+RandomForestClassifier(class_weight=weights)
+
+RandomForestClassifier(class_weight="balanced")
+
+i_class0 = np.where(target==0)[0]
+i_class1 = np.where(target==1)[0]
+n_class0 = len(i_class0)
+n_class1 = len(i_class1)
+i_class1_downsampled = np.random.choice(i_class1,size=n_class0,replace=False)
+np.hstack((target[i_class0],target[i_class1_downsampled]))
+
+i_class0_upsampled = np.random.choice(i_class0,size=n_class1,replace=True)
+np.concatenate((target[i_class0_upsampled],target[i_class1]))
+
+# load library
+import pandas as pd
+import numpy as np
+
+# create url
+url = "/content/Iris.xlsx"
+
+# load data
+df = pd.read_excel(url)
+
+# filter out rows with any NaN values
+df = df[~df.isnull().any(axis=1)]
+
+
+# print only 3 columns
+df.iloc[:, :2]
+
+feature = np.array([df])
+# create one-hot encoder
+one_hot = LabelBinarizer()
+
+# one-hot encode feature
+one_hot.fit_transform(feature)
+               #Output Expected
+
+import numpy as np
+from sklearn.datasets import load_iris
+from sklearn.preprocessing import LabelBinarizer, MultiLabelBinarizer
+
+feature1 = np.array(load_iris().data)  # Select only the features (data)
+target1 = np.array(load_iris().target)  # Select only the target (labels)
+
+one_hot1 = LabelBinarizer()  # Create an instance of LabelBinarizer
+one_hot_encoded = one_hot1.fit_transform(target1)  # Fit and transform the labels
+print(one_hot_encoded)
+               #Output Expected
+
+
+
+
+#Collab Link :
+https://colab.research.google.com/drive/1PD-251IOWFjsQjas8oE-m4oWMOZygmjV?usp=sharing
