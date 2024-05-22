@@ -1,0 +1,241 @@
+#PART 1
+
+
+"""
+Encoding Nominal Categorial Features
+
+Promblem : You have a feature with a nominal classes that has no instrinsic ordering (eg. apple, pear, banana).
+Solution : One hot encode the feature using scikit-learn's LabelBinarizer
+"""
+
+import numpy as np
+from sklearn.preprocessing import LabelBinarizer, MultiLabelBinarizer
+
+feature = np.array([
+    ["Texas"],
+    ["California"],
+    ["Texas"],
+    ["Delaware"],
+    ["Texas"]
+])
+
+#create one-hot encoder
+one_hot = LabelBinarizer()
+
+#one-hot encode feature
+one_hot.fit_transform(feature)
+                    #Output Expected
+
+#view feature classes
+one_hot.classes_
+                    #Output Expected
+
+"""
+If we want to reverse the one-hot encoding, we can use inverse_transform
+"""
+
+#reverse one-hot encoding
+one_hot.inverse_transform(one_hot.transform(feature))
+                    #Output Expected
+
+"""
+We can even use pandas to one-hot encode the feature with get_dummies
+"""
+
+import pandas as pd
+
+pd.get_dummies(feature[:,0])
+                    #Output Expected
+
+"""
+To handle a situation where each observation lists multiple classes with MultiLabelBinarizer()
+"""
+
+#create multiclass feature
+multiclass_feature = [
+    ("Texas","Florida"),
+    ("California","Alabama"),
+    ("Delaware","Florida"),
+    ("Texas","Alabama"),
+]
+
+#create multiclass one-hot encoder
+one_hot_multiclass = MultiLabelBinarizer()
+
+#one-hot encode multiclass feature
+one_hot_multiclass.fit_transform(multiclass_feature)
+                    #Output Expected
+
+#view classes
+one_hot_multiclass.classes_
+                    #Output Expected
+
+"""
+Encoding Ordinal Categorial Features
+
+Promblem : You have an ordinal categorial feature (e.g. high, medium, low)
+Solution : Use Pandas dataframe's replace method to transform string labels to numeric equivalents
+"""
+
+import pandas as pd
+
+#create features
+df = pd.DataFrame({"Score" : ["Low","Low","Medium","Medium","High"]})
+
+#create mapper
+scale_mapper = {
+    "Low" : 1,
+    "Medium" : 2,
+    "High" : 3
+}
+
+#replace feature values with scale
+df["Score"].replace(scale_mapper)
+                    #Output Expected
+
+"""
+Encoding Dictionaries of features
+
+Promblem : You have a dictionary and want to convert it into a feature matrix
+Solution : Use DictVectorizer
+"""
+
+from sklearn.feature_extraction import DictVectorizer
+
+data_dict = [
+    {"Red":2,"Blue":4},
+    {"Red":4,"Blue":3},
+    {"Red":1,"Yellow":2},
+    {"Red":2,"Yellow":2}
+]
+
+#create dictionary vectorizer
+dictvectorizer = DictVectorizer(sparse=False)    #force DictVectorizer to output a
+
+#convert dictionary to feature matrix
+features = dictvectorizer.fit_transform(data_dict)
+
+features
+                    #Output Expected
+
+#get feature names
+dictvectorizer.get_feature_names_out()
+                    #Output Expected
+
+"""
+Imputing Missing Class values
+
+Promblem : You have a categorial feature containing missing values that you want to replace with the predicted values
+Solution : The ideal solution is to train a machine learning classifier algorithm to predict the missing values, commonly a k-nearest neighbours (KNN) classifier
+"""
+
+#load libraries
+import numpy as np
+from sklearn.neighbors import KNeighborsClassifier
+
+X = np.array([[0,2.10,1.45],
+    [1,1.8,1.33],
+    [0,1.22,-1.19]
+])
+
+X_with_nan = np.array([
+    [np.nan,0.87,1.31],
+    [np.nan,-0.67,-0.22]
+])
+
+#train KNN learner
+clf = KNeighborsClassifier(3,weights='distance')
+trained_model = clf.fit(X[:,1:],X[:,0])
+
+#predict missing values' class
+imputed_values = trained_model.predict(X_with_nan[:,1:])
+
+#join column of predicted class with their other features
+X_with_imputed = np.hstack((imputed_values.reshape(-1,1),X_with_nan[:,1:]))
+
+#join two feature matrices
+np.vstack((X_with_imputed,X))
+                    #Output Expected
+
+"""
+An alternative solution is to fill in the missing values with the feature's most frequent value
+"""
+
+from sklearn.impute import SimpleImputer
+
+#join the two feature matricies
+X_complete = np.vstack((X_with_nan,X))
+
+imputer = SimpleImputer(missing_values=np.nan,strategy='most_frequent') #strateg
+
+imputer.fit_transform(X_complete)
+                    #Output Expected
+
+"""
+Handling Imbalanced Classes
+
+Promblem : You have a target vector (dataset) with highly imbalanced classes
+"""
+
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import load_iris
+
+iris = load_iris()
+
+features = iris.data
+target = iris.target
+
+#remove first 40 observations
+features = features[40:,:]
+target = target[40:]
+
+#create binary target vector indicating if class 0
+target = np.where((target==0),0,1)
+
+target
+                    #Output Expected
+
+#create weights
+weights = {0: .9, 1: 0.1}
+
+#create random forest classifier with weights
+RandomForestClassifier(class_weight=weights)
+                    #Output Expected
+
+"""
+You can pass balanced which automatically creates weights inversely proportional to class frequencies
+"""
+
+RandomForestClassifier(class_weight="balanced")
+                    #Output Expected
+
+i_class0 = np.where(target==0)[0]
+i_class1 = np.where(target==1)[0]
+
+n_class0 = len(i_class0)
+n_class1 = len(i_class1)
+
+i_class1_downsampled = np.random.choice(i_class1,size=n_class0,replace=False)
+
+np.hstack((target[i_class0],target[i_class1_downsampled]))
+                    #Output Expected
+
+#join together class 0's feature matrix with the downsampled class 1's feature matrix
+np.vstack((features[i_class0,:],features[i_class1_downsampled,:]))[0:5]
+                    #Output Expected
+
+i_class0_upsampled = np.random.choice(i_class0,size=n_class1,replace=True)
+
+np.concatenate((target[i_class0_upsampled],target[i_class1]))
+                    #Output Expected
+
+#join together class 0's upsampled feature matrix with class 1's feature matrix
+np.vstack((features[i_class0_upsampled,:],features[i_class1,:]))[0:5]
+                    #Output Expected
+
+
+
+
+#Link for collab :
+https://colab.research.google.com/drive/1Ii6Hw3tMUlbs_JPCQKg4x6cc2ofLGpVT?usp=sharing
