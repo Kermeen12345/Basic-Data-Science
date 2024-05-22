@@ -1,0 +1,254 @@
+"""
+Cleaning Text
+
+Promblem : You have some unstructured text data and want to complete some basic cleaning
+Solution : Most Basic text cleaning operations should only replace Python's core string operations. In particular strip, replace and split
+"""
+
+text_data = [" Dr. Mahendra Kanojia   ",
+             "Sheth L.U.J and M.V. College",
+             "      Andheri East, Mumbai"]
+
+#strip whitespaces
+strip_whitespace = [string.strip() for string in text_data]
+strip_whitespace
+            #Output Expected
+
+"""
+We can also create and apply a custom transformation function
+"""
+
+def capitalizer(string: str) -> str:
+  return string.upper()
+
+[capitalizer(string) for string in remove_periods]
+            #Output Expected
+
+"""
+We can use regular expressions re to make powerful string operations
+"""
+
+import re
+
+def replace_letters_with_X(string: str) -> str:
+  return re.sub(r"[a-zA-Z]","X",string)
+
+[replace_letters_with_X(string) for string in remove_periods]
+            #Output Expected
+
+"""
+Parsing and Cleaning HTML
+
+Promblem : You have text data with HTML elements and want to extract just the text
+Solution : Use beautiful soup's extensive set of options to parse and extract from HTML
+"""
+
+from bs4 import BeautifulSoup
+
+html = """
+<div class='full_name'><span style='font-weight:bold'>Mahendra</span>Kanojia</div>
+"""
+
+#Parse html
+soup = BeautifulSoup(html)
+
+#Find the div with the class "full_name", show text
+soup.find("div",{"class":"full_name"}).text
+            #Output Expected
+
+"""
+Removing Punctuation
+
+Problem : You have a feature of text data and want to remove punctuation.
+Solution : Define a function that uses translate with a dictionary of punctuation characters
+"""
+
+import unicodedata
+import sys
+text_data = ['Hi!!! We. are. Learning. Data Handling.....', '10000% Agree!!!! #LoveIT', 'Right?!?!']
+
+# create a dictionary of punctuation characters
+punctuation = dict.fromkeys(i for i in range(sys.maxunicode) if unicodedata.category(chr(i)).startswith)
+
+# for each string, remove any punctuation characters
+[string.translate(punctuation) for string in text_data]
+            #Output Expected
+
+"""
+Tokenizing Text
+
+Problem : You have text and want to break it up into individual words.
+Solution : Natural Language Toolkit for Python ( NLTK ) has a powerful set of text manipulation operations, including word tokenizing:
+"""
+
+import nltk
+
+# import all the resources for Natural Language Processing with Python
+nltk.download("book")
+
+from nltk.tokenize import word_tokenize
+string = "Your Data Science Model is as good as your Data. Data is next happning thing!. Is'nt it?"
+# tokenize words
+word_tokenize(string)
+['Your','Data','Science','Model','is','as','goog','as','your','Data','.','Data','is','next','happning','thing','!']
+            #Output Expected
+
+from nltk.tokenize import sent_tokenize
+string = "Your Data Science Model is as good as your Data. Data is next happning thing!. Is'nt it?"
+# tokenize sentences
+sentences = sent_tokenize(string)
+print("~~Sentences~~")
+print(sentences)
+tagged = nltk.pos_tag(sentences)
+print("~~Tags~~")
+print(tagged)
+            #Output Expected
+
+"""
+Removing Stop Words
+
+Problem : Given tokenized text data, you want to remove extremely common words (e.g., a, is, of, on) that contain little informational value.
+Solution: Use NLTK’s stopwords
+"""
+
+from nltk.corpus import stopwords
+import nltk
+nltk.download('stopwords')
+tokenized_words = ['i', 'am', 'going', 'to', 'go', 'to', 'the', 'college', 'and', 'University']
+stop_words = stopwords.words('english')
+# print stop words
+print("~~ Stopwords~~")
+print([word for word in tokenized_words if word in stop_words])
+# remove stop words
+print("~~ Words ~~")
+print([word for word in tokenized_words if word not in stop_words])
+            #Output Expected
+
+"""
+Stemming Words
+
+Problem : You have tokenized words and want to convert them into their root forms.
+Solution : Use NLTK’s PorterStemmer
+"""
+
+from nltk.stem.porter import PorterStemmer
+
+tokenized_words = ['i','am', 'humbled', 'by', 'this', 'virtualized', 'seminars','and','virtualizing']
+
+# create stemmer
+porter = PorterStemmer()
+
+# apply stemmer
+[porter.stem(word) for word in tokenized_words]
+            #Output Expected
+
+"""
+Tagging Part of Speech
+
+Problem : You have text data and want to tag each word or character with its part of speech
+Solution : Use NLTK’s pre-trained parts-of-speech tagger pos_tag
+"""
+
+from nltk import pos_tag
+from nltk import word_tokenize
+import nltk
+
+nltk.download('averaged_perceptron_tagger')
+text_data = "We are learning Data Handling techniques"
+
+text_tagged = pos_tag(word_tokenize(text_data))
+text_tagged
+            #Output Expected
+
+"""
+we can use the tags to find certain parts of speech
+"""
+
+from nltk.corpus import brown
+from nltk.tag import UnigramTagger
+from nltk.tag import BigramTagger
+from nltk.tag import TrigramTagger
+import nltk
+nltk.download('brown')
+
+# get some text from the Brown
+sentences = brown.tagged_sents(categories='news')
+
+# split into 4000 stences for training and 623 for testing
+train = sentences[:4000]
+test = sentences[4000:]
+
+# create backoff tagger
+unigram = UnigramTagger(train)
+bigram = BigramTagger(train, backoff=unigram)
+trigram = TrigramTagger(train, backoff=bigram)
+trigram.evaluate(test)
+            #Output Expected
+
+"""
+Encoding Text as a Bag of Words
+
+Problem : You have text data and want to create a set of features indicating the number of times an observation’s text contains a particular word
+Solution : Use scikit-learn’s CountVectorizer
+"""
+
+import numpy as np
+from sklearn.feature_extraction.text import CountVectorizer
+
+text_data = np.array(['I love china and italy. china !', 'india is best', 'india beats both'])
+count = CountVectorizer()
+
+bag_of_words = count.fit_transform(text_data)
+bag_of_words
+            #Output Expected
+
+"""
+We can use toarray to view a matrix of word counts for each observation
+"""
+
+bag_of_words.toarray()
+            #Output Expected
+
+"""
+We can use the vocabulary_ method to view the word associated with each feature
+"""
+
+print(type(count))
+count_features = count.get_feature_names_out()
+print(count_features)
+            #Output Expected
+
+"""
+Weighting Word Importance
+
+Problem : You want a bag of words, but with words weighted by their importance to an observation
+Solution : Compare the frequency of the word in a document (a tweet, movie review, speech transcript, etc.) with the frequency of the word in all other documents using term 
+frequency-inverse document frequency (tf-idf). scikit-learn makes this easy with TfidfVectorizer
+"""
+
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+text_data = np.array(['I love Brazil. Brazil!', 'Sweden is best', 'Germany beats both'])
+
+# create the tf-idf feature matrix
+tfidf = TfidfVectorizer()
+feature_matrix = tfidf.fit_transform(text_data)
+feature_matrix
+            #Output Expected
+
+feature_matrix.toarray()
+            #Output Expected
+
+#vocabulary_ shows us the word of each feature
+tfidf.vocabulary
+            #Output Expected
+
+
+
+
+
+
+
+#Link for collab notebook :
+https://colab.research.google.com/drive/1Xe4iC6pkTKZL2hl6AZp5fBcCqejGwO50?usp=sharing
