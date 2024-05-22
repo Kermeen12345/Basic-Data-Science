@@ -1,0 +1,219 @@
+"""
+What is data wrangling ?
+
+Data wrangling is the process of transforming and structuring data from one raw form into a desired format with the intent of improving data quality and making it more consumable and useful 
+for analytics or machine learning.
+
+Types of data wrangling
+1. Data Discovering
+2. Data Structuring
+3. Data Cleaning
+4. Enriching Data
+5. Validating Data
+6. Publishing Data
+
+Promblem : You want to load a Pre-existing sample dataset
+Solution : Scikit learn comes with a number of popular datasets for you to use
+
+Loading Sample Dataset
+    load_boston
+          Contains 503 observations on Boston Housing Prices. It is good dataset for exploring regression algorithms.
+    Load digits dataset
+          Contains 1797 observations from images of handwritten digits. It is good dataset for teaching image classification.
+"""
+
+#to load scikit learn's datasets
+from sklearn import datasets
+
+#load digits dataset
+digits = datasets.load_digits()
+
+""" Syntax :
+sklearn.datasets.load_digits(*,n_clss = 10,return_X_y=False,as_frame=False)
+
+Classes = 10
+Sample per class ~180
+Sample totl 1797
+Dimensionality 64
+Features = integers 0-16
+"""
+
+print(digits)
+                  #Output Expected
+
+#create features matrix
+features = digits.data
+
+#create target vector
+target = digits.target
+
+#view first observation
+features[0]
+                  #Output Expected
+
+"""
+Load iris dataset
+    Contains 150 observations on the measurements of iris flowers. It is a good dataset for exploring classification algorithms.
+"""
+
+dataset_2 = datasets.load_iris()
+print(dataset_2)
+                  #Output Expected
+
+#create features matrix
+features_2 = dataset_2.data
+
+#create target vector
+target_2 = dataset_2.target
+
+#view first observation
+features_2[0]
+                  #Output Expected
+
+"""
+2.2 Creating A Stimulated Data
+"""
+
+#load library
+from sklearn.datasets import make_regression
+
+#generate features matrix, target vector and true coefficients
+features, target, coefficients = make_regression(n_samples =  100,
+                                                 n_features = 3,
+                                                 n_informative = 3,
+                                                 n_targets = 1,
+                                                 noise = 0.0,
+                                                 coef = True,
+                                                 random_state = 1)
+
+#view feature matrix and target vector
+print("Feature Matrix \n {}".format(features[:3]))
+print()
+print("Target Vector \n {}".format(target[:3]))
+                  #Output Expected
+
+"""
+Creating A Stimulated Dataset for classification
+"""
+
+#load library
+from sklearn.datasets import make_classification
+
+#generate features matrix and target vector
+features, target = make_classification(n_samples = 100,
+                                       n_features = 3,
+                                       n_informative = 3,
+                                       n_redundant = 0,
+                                       n_classes = 2,
+                                       weights = [.25,.75],
+                                       random_state = 1)
+
+#view feature matrix and target vector
+print("Feature Matrix \n {}".format(features[:3]))
+print()
+print("Target Vector \n {}".format(target[:3]))
+                  #Output Expected
+
+"""
+Dataset Designed to work well with clustering techniques
+"""
+
+#load library
+from sklearn.datasets import make_blobs
+
+#generate feature matrix and target vector
+features, target = make_blobs(n_samples = 100,
+                              n_features = 2,
+                              centers = 3,
+                              cluster_std = 0.5,
+                              shuffle = True,
+                              random_state = 1)
+
+#view feature matrix and target vector
+print("Feature Matrix \n {}".format(features[:3]))
+print()
+print("Target Vector \n {}".format(target[:3]))
+                  #Output Expected
+
+#load library
+import matplotlib.pyplot as plt
+
+#view scatterplot
+plt.scatter(features[: , 0], features[: , 1], c=target)
+plt.show()
+                  #Output Expected
+
+"""
+2.3 Loading a CSV File
+"""
+
+#load library
+import pandas as pd
+import requests
+
+#create url
+url = "http://samplecsv.s3.amazonaws.com/SacramentocrimeJanuary2006.csv"
+
+#load url
+df=pd.read_csv(url)
+
+df.head(2)
+                  #Output Expected
+
+"""
+2.4 Loading an Excel File
+"""
+
+#load library
+import pandas as pd
+
+#create url
+url = "https://wwww.sample-videos.com/xls/Sample-Spreadsheet-10-rows.xls"
+
+#load data
+df = pd.read_excel(url,sheet_name=0,header=None)
+
+#view the first two rows
+df.head(2)
+                  #Output Expected
+
+"""
+2.5 Loading JSON file
+"""
+
+#load library
+import pandas as pd
+
+#create url
+url = "https://api.guithub.com/users/f00-/repos"
+
+#load data
+df = pd.read_json(url,orient="columns")
+
+#view first two rows
+df.head(2)
+                  #Output Expected
+
+"""
+2.6 Quering SQL Database
+"""
+
+#load libraries
+import pandas as pd
+from sqlalchemy import create_engine
+
+#create a connection to the database
+db_connection = create_engine('sqlite://sample.db')
+
+#see table names
+print(db_connection.table_names())
+                  #Output Expected
+
+#load data
+df = pd.read_sql_query('SELECT * FROM albums',db_connection)
+
+df.head()
+                  #Output Expected
+
+#Collab Link :
+https://colab.research.google.com/drive/1AaRe56EfaJi6qTUtUvcVL76c-Pt7558h?usp=sharing
