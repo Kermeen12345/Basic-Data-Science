@@ -1,0 +1,99 @@
+"""
+Reducing Features Using Principal Components
+
+Promblem : Given a set of features, you want to reduce the number of features while retaining the variance in the data
+Solution : Use principal component analysis with scikit's PCA
+"""
+
+#load libraries
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn import datasets
+
+#Load the data
+digits = datasets.load_digits()
+
+#Standardize the fwaturre matrix
+X = StandardScaler().fit_transform(digits.data)
+
+#create a PCA that will retain 99% of the variance
+pca = PCA(n_components=0.99,whiten=True)
+
+#conduct PCA
+X_pca = pca.fit_transform(X)
+
+#show results
+print("Original number of features : ",X.shape[1])
+print("Reduced number of features : ",X_pca.shape[1])
+                    #Output Expected
+
+"""
+PCA DOCUMENTATION
+
+Reducing Features When Data Is Linearly Inseprable
+
+Promblem : You suspect you have linearly inseparable data and want to reduce the dimensions
+Solution : Use an extension of principal component analysis that uses kernels to allow for non-linear dimensionality reduction
+"""
+
+#load libraries
+from sklearn.decomposition import PCA, KernelPCA
+from sklearn.datasets import make_circles
+
+#create linearly inseparable data
+X, _ = make_circles(n_samples=1000,
+                    random_state=1,
+                    noise=0.1,
+                    factor=0.1)
+
+#apply kernal PCA with radius basis function (RBF) kernel
+kpca = KernelPCA(kernel="rbf",gamma=15,n_components=1)
+X_kpca = kpca.fit_transform(X)
+
+print("Original number of features : ",X.shape[1])
+print("Reduced number of features : ",X_kpca.shape[1])
+                    #Output Expected
+
+"""
+Kernel PCA Documentation
+
+Reducing Features By maximizing Class Separability
+
+Promblem : You want to reduce the features to be used by a classifier
+Solution : try linear discriminant analysis (LDA) to project the features onto component axes that maximize the separation of classes
+"""
+
+#load libraries
+from sklearn import datasets
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
+#load the iris flower dataset
+iris = datasets.load_iris()
+X = iris.data
+y = iris.target
+
+#create an LDA that will reduce the data down to 1 feature
+lda = LinearDiscriminantAnalysis(n_components=1)
+
+#run an LDA and use it to transform the features
+X_lda = lda.fit(X,y).transform(X)
+
+#print the number of features
+print("Original Number of features : ",X.shape[1])
+print("Reduced Number of features : ",X_lda.shape[1])
+                    #Output Expected
+
+"""
+We can use explained_variance_ratio_ to view the amount of variance explained by each component. In our solution the single component explanied over 99% of the variance.
+"""
+
+#view the ratio of explained variance
+lda.explained_variance_ratio_
+                    #Output Expected
+
+"""
+Linear Disciminant Analysis (LDA)
+"""
+
+print("Reduced Number of Features : ",X_lda.shape[1])
+                    #Output Expected
