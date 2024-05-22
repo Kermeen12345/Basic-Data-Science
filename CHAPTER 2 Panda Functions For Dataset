@@ -1,0 +1,258 @@
+"""
+Creating A Data Frame
+"""
+
+import pandas as pd
+dataframe = pd.DataFrame()
+
+#install pandas
+!pip install pandas
+
+"""
+Describing The Data
+"""
+
+!pip install wget
+
+#download file
+!wget http://tinyurl.com/titanic-csv -O titanic.csv
+
+#verify if the file exists
+!ls titanic.csv
+              #Output Expected
+
+#check file format
+!file titanic.csv
+              #Output Expected
+
+import pandas as pd
+df = pd.read_table("titanic.csv", sep=",", header=None, names=["PassengerId", "Survived", "Pclass", "Name", "Sex",
+                                                               "Age", "SibSp", "Parch", "Ticket", "Fare", "Cabin", "Embarked"])
+
+#show first two rows
+print(df.head(2))
+
+#show last two rows
+print(df.tail(2))
+
+#show dimensions
+print("Dimensions : {}".format(df.shape))
+
+#show statistics
+df.describe()
+              #Output Expected
+
+"""
+Navigating Data Frames
+"""
+
+#select the first row
+print(df.iloc[0])
+
+#select three rows
+print(df.iloc[1:4])
+
+#all rows up to and including the fourth row
+print(df.iloc[:4])
+              #Output Expected
+
+"""
+Set the index of passenger names and then select rows using a name
+"""
+
+#check the index
+df.index
+              #Output Expected
+
+#check for a column named "Name"
+"Name" in df.columns
+              #Output Expected
+
+#If "Name" column exists, rename it
+df = df.rename(columns={"Name": "PassengerName"})
+
+#viewing the data of dataset
+df.head()
+              #Output Expected
+
+#reset the index
+df = df.reset_index()
+
+#verify the data frame's columns
+df.columns
+
+#check if desired row label exists in the index
+'Allen, Miss Elisabeth Walton' in df.index
+             #Output Expected
+
+# Set the 'Name' column as the index
+df = df.set_index('Name')
+
+# Check if the desired row label exists in the index
+if 'Allen, Miss Elisabeth Walton' in df.index:
+    # Show the row
+    print(df.loc['Allen, Miss Elisabeth Walton'])
+else:
+    print('Row label not found.')
+             #Output Expected
+
+"""
+ Selecting Rows Based on Conditionals
+"""
+
+#select top two rows where column 'sex' is 'female'
+df[df['Sex']=='female'].head(2)
+             #Output Expected
+
+#multiple conditions
+df[(df['Sex']=='female')&(df['Age']>=65)]
+             #Output Expected
+
+"""
+Replacing Values
+"""
+
+#replace any instance of 'female' with Woman
+df['Sex'].replace('female','Woman').head(2)
+             #Output Expected
+
+#replace any instance of 'female' with 'Woman'
+df['Sex'].replace(['female','male'],['Woman','Man']).head(5)
+        #Output Expected
+
+df.replace(1,"One").head(2)
+        #Output Expected
+
+"""
+Renaming Columns
+"""
+
+df.rename(columns={'PClass':'Passenger Class'}).head(2)
+        #Output Expected
+
+df.rename(columns={'PClass':'Passenger Class','Sex' : 'Gender'}).head(2)
+        #Output Expected
+
+"""
+Finding The Min, Max, Sum, Average and Count
+"""
+
+print('Maximum : {}'.format(df['Age'].max()))
+print('Minimum : {}'.format(df['Age'].min()))
+print('Mean : {}'.format(df['Age'].mean()))
+print('Sum : {}'.format(df['Age'].sum()))
+print('Count : {}'.format(df['Age'].count()))
+        #Output Expected
+
+"""
+Some methods to use on whole data frame
+"""
+
+print("Variance : {}".format(df.var()))
+print("Standard Deviation : {}".format(df.std()))
+print("Kurtosis : {}".format(df.kurt()))
+print("Skewness : {}".format(df.skew()))
+        #Output Expected
+
+"""
+Finding Unique Values
+"""
+
+#unique will return an array of all unique values in a column
+df['Sex'].unique()
+        #Output Expected
+
+#value_count will display all unique values with the number of times each value appears
+df['Sex'].value_counts()
+        #Output Expected
+
+
+"""
+Handling Missing Values
+"""
+
+#select missingvalues, show 2 rows
+df[df['Age'].isnull()].head(2)
+        #Output Expected
+
+"""
+Deleting A Column
+"""
+
+#axis=1 means the column axis
+df.drop('Age',axis=1).head(2)
+        #Output Expected
+
+"""
+Deleting A Row
+"""
+
+#create new dataframe excluding the rows you want to delete
+df[df['Sex']!='male'].head(2)
+        #Output Expected
+
+#delete a row by matching a unique value
+df[df['PassengerName']!='Allison, Miss Helen Loraine'].head(2)
+        #Output Expected
+
+#delete a row by index
+df[df.index != 0].head(2)
+        #Output Expected
+
+"""
+Grouping Rows by Values
+"""
+
+df.groupby('Sex').mean()
+        #Output Expected
+
+df.groupby('Survived')['PassengerName'].count()
+        #Output Expected
+
+df.groupby(['Sex','Survived'])['Age'].mean()
+        #Output Expected
+
+"""
+Looping Over A Column
+"""
+
+df.info()
+        #Output Expected
+
+df['PassengerName'].head()
+        #Output Expected
+
+#for..in..loop
+for n in df['PassengerName'][0:2]:
+  print(n.upper())
+
+#list comprehension (more "pythonic")
+[name.upper() for name in df['PassengerName'][0:2]]
+
+"""
+Applying a function over all elements in a column
+"""
+
+def uppercase(x):
+  return x.upper()
+
+df['PassengerName'].apply(uppercase)[0:2]
+
+"""
+Applying a function to groups
+"""
+
+df.groupby('Sex').apply(lambda x: x.count())
+        #Output Expected
+
+
+
+
+
+
+
+#PDF File link :
+https://drive.google.com/file/d/1WpsXFt1P6bvoGVxk7dcR8uNxylm9kXNU/view?usp=drive_link
+
+#Collab Link :
+https://colab.research.google.com/drive/11oQs1hPEJeJO5IdztYnCVkzyQqEF7YL5?usp=sharing
