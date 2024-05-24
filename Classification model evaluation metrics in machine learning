@@ -1,0 +1,67 @@
+#Classification model evaluation metrics in machine learning
+
+"""
+Classification Evaluation Metrics
+"""
+
+
+# Import necessary libraries
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import make_classification
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report, confusion_matrix
+# Generate sample data (replace this with your dataset)
+X, y = make_classification(n_samples=1000, n_features=10, n_classes=2, random_state=42)
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Initialize and train a classifier (you can replace this with any classifier of your choice)
+classifier = LogisticRegression()
+classifier.fit(X_train, y_train)
+# Make predictions
+y_pred = classifier.predict(X_test)
+# Calculate evaluation metrics
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+# Print the evaluation metrics
+print("Accuracy:", accuracy)
+print("Precision:", precision)
+print("Recall:", recall)
+print("F1 Score:", f1)
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+print("\nConfusion Matrix:")
+print(conf_matrix)
+
+
+                             #OUTPUT EXPECTED
+
+
+"""
+Reference Links :
+
+1. 
+https://towardsdatascience.com/understanding-auc-roc-curve-68b2303cc9c5
+
+2.
+https://towardsdatascience.com/guide-to-confusion-matrices-classification-performance-metrics-a0ebfc08408e
+
+3.
+https://towardsdatascience.com/understanding-auc-roc-curve-68b2303cc9c5
+
+4.
+https://www.evidentlyai.com/classification-metrics/explain-roc-curve?authuser=0#:~:text=The%20ROC%20AUC%20score%20is%20the%20area%20under%20the%20ROC,and%201%20indicates%20perfect%20performance.
+
+
+
+
+My collab notebook link : 
+https://colab.research.google.com/drive/1Ms9c7GAQFdHa329TuhxPFX3RQliFoQSh?usp=sharing
+
+Collab Notebook Link By Rahul Goswami : 
+https://colab.research.google.com/github/goswami-rahul/machine-learning/blob/master/UnderstandingMetrics.ipynb
+
+Collab Notebook Link To The rightful Ownwer : 
+https://colab.research.google.com/github/datacommonsorg/api-python/blob/master/notebooks/intro_data_science/Classification_and_Model_Evaluation.ipynb
