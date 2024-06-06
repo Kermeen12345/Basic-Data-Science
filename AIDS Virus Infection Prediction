@@ -1,0 +1,160 @@
+"""
+About The Dataset
+
+Dataset contains healthcare statistics and categorical information about patients who have been diagnosed with AIDS.
+
+Attribute Information :
+
+time: time to failure or censoring
+trt: treatment indicator
+age: age (yrs) at baseline
+wtkg: weight (kg) at baseline
+hemo: hemophilia (0=no, 1=yes)
+homo: homosexual activity (0=no, 1=yes)
+drugs: history of IV drug use (0=no, 1=yes)
+karnof: Karnofsky score (on a scale of 0-100)
+oprior: Non-ZDV antiretroviral therapy pre-175 (0=no, 1=yes)
+z30: ZDV in the 30 days prior to 175 (0=no, 1=yes)
+preanti: days pre-175 anti-retroviral therapy
+race: race (0=White, 1=non-white)
+gender: gender (0=F, 1=M)
+str2: antiretroviral history (0=naive, 1=experienced)
+strat: antiretroviral history stratification (1='Antiretroviral Naive',2='> 1 but <= 52 weeks of prior antiretroviral therapy',3='> 52 weeks)
+symptom: symptomatic indicator (0=asymp, 1=symp)
+treat: treatment indicator (0=ZDV only, 1=others)
+offtrt: indicator of off-trt before 96+/-5 weeks (0=no,1=yes)
+infected: is infected with AIDS (0=No, 1=Yes)
+"""
+
+#Importing the libraries
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+#Importing the dataset
+dataset = pd.read_csv('/content/AIDS_Classification.csv')
+
+#Describing the dataset
+df = pd.read_table('/content/AIDS_Classification.csv', sep=",", header=None, names=["time", "trt", "age", "wtkg","hemo","homo",
+                                                           "drugs", "karnof", "oprior", "z30",
+                                                           "preanti", "race", "gender","str2","strat",
+                                                         "symptom","treat","offtrt","infected"])
+
+#show first two rows
+print("The first two records are : ")
+print(df.head(2))
+
+#show last two rows
+print("The last two records are : ")
+print(df.tail(2))
+
+#show dimensions
+print("Dimensions : {}".format(df.shape))
+
+#show statistics
+df.describe()
+
+X = dataset.iloc[:, [0, 3]].values
+y = dataset.iloc[:, -1].values
+
+#Splitting the dataset into the Training set and Test set
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state = 0)
+
+#Feature Scaling
+#Since our dataset containing character variables
+#we have to encode it using LabelEncoder
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
+
+#Training the Naive Bayes model on the Training set
+from sklearn.naive_bayes import GaussianNB
+classifier = GaussianNB()
+classifier.fit(X_train, y_train)
+
+#Predicting the Test set results
+y_pred = classifier.predict(X_test)
+print("Predicted Test Results : ",y_pred)
+print("~"*20)
+
+#Making the Confusion Matrix
+from sklearn.metrics import confusion_matrix, accuracy_score
+ac = accuracy_score(y_test,y_pred)
+print("Model Accuracy : ",ac*100,"%")
+print("~"*20)
+cm = confusion_matrix(y_test, y_pred)
+print("Model Confusion Matrix : ")
+print(cm)
+
+#Result Diagnosis
+from sklearn.metrics import accuracy_score, confusion_matrix
+confusion_matrix(y_pred, y_test) # Call the confusion_matrix function directly
+
+#Assuming 'classifier' from previous cells is the model you want to use
+y_predictProb = classifier.predict_proba(X_test) 
+print(y_predictProb)
+
+from sklearn.metrics import auc, roc_curve
+fpr, tpr, thresholds = roc_curve(y_test, y_predictProb[::,1])
+roc_auc = auc(fpr, tpr)
+roc_auc
+
+#Plot ROC Curve
+import matplotlib.pyplot as plt
+plt.plot(fpr, tpr, color='darkorange', label='ROC curve (area = %0.2f)' % roc_auc)
+plt.plot([0, 1], [0, 1], color='navy', linestyle='--')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver operating characteristic')
+plt.legend(loc="lower right")
+
+"""
+Using Data Visualization For Results
+"""
+
+#Density Plot
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+file_path = '/content/AIDS_Classification.csv'
+df = pd.read_csv(file_path)
+
+sns.kdeplot(data=df, x="infected",
+            y="age",shade=True)
+plt.show()
+
+
+"""
+Explanation : The desity plot shows the density distribution of age for individuals who are infected (represented on the x-axis) versus those who are not. Darker shaded areas indicate higher 
+densities. This visual representation helps to understand the relationship between infection status and age distribution in the dataset.
+"""
+
+#Scatter Plot
+sns.scatterplot(data=df,x='age',y='time',hue='treat')
+plt.show()
+
+"""
+Explanation : The scatter plot shows the relationship between age and time, with different colors representing different treatment groups. Each point corresponds to an individual from the dataset.
+X-axis Represents the age of the individuals. Y-axis Represents the time. Each point represents an individual from the dataset. The color of each point is determined by the treat column, 
+indicating different treatment groups.
+"""
+
+#Line Plot
+import seaborn as sns
+import pandas as pd
+import matplotlib.pyplot as plt
+
+file_path = '/content/AIDS_Classification.csv'
+df = pd.read_csv(file_path)
+sns.lineplot(data=df,x='oprior',y='preanti',hue='z30')
+plt.show()
+
+"""
+Explanation : The plot will show lines connecting data points with the same z30 value. X-axis Represents the oprior values which is the Non-ZDV anti-retroviral Therapy. Y-axis Represents the 
+preanti values which are the days pre-175 anti-retrovira therapy. Different colors will be used for different z30 groups.
+"""
+
+#Link for Google Collab Notebook : https://colab.research.google.com/drive/1Tb2kHuCO5-QKClH11FlPjTGRqQ99Gfaw?usp=sharing
