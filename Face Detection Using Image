@@ -1,0 +1,33 @@
+#Link for Collab Notebook : https://colab.research.google.com/drive/1g9E4RWa1zp3u9o2cTtVOX4gtcGMOTJwQ?usp=sharing
+
+pip install opencv-python
+
+#Import the OpenCV Package and Read the Image
+import cv2
+Path = '/content/Kermeen-edit.jpeg'
+image = cv2.imread(Path)
+
+#print the dimensions of this array
+image.shape
+
+#: Convert the Image to Grayscale
+gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+gray_image.shape
+
+#Load the Classifier
+face_clf = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+
+#Perform the Face Detection
+faceDetected = face_clf.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5, minSize=(40, 40))
+
+#Drawing a Bounding Box
+for (x, y, w, h) in faceDetected: cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 4)
+
+#Displaying the Image
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+import matplotlib.pyplot as plt
+plt.figure(figsize=(20,10))
+plt.imshow(image_rgb)
+plt.axis('off')
